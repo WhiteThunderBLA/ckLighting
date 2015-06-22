@@ -1,0 +1,139 @@
+Enter file contents here
+import java.io.*;
+import java.net.*;
+import java.nio.channels.*;
+import java.util.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import static sun.invoke.util.ValueConversions.box;
+import static sun.invoke.util.ValueConversions.box;
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author Tim
+ */
+public class Finger extends JFrame{
+     
+    JTextArea box = new JTextArea("send coolness...");
+        
+    public Finger(){
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(700, 300);
+        JScrollPane pane = new JScrollPane(box);
+        JButton send = new JButton("send");
+        add(send);
+        add(pane);
+        add(box);
+        setVisible(true);
+        
+        
+//create a non blcoking server cocket channel
+        try{
+        ServerSocketChannel sock = ServerSocketChannel.open();
+        sock.configureBlocking(false);
+        
+        //set host and port to monitor
+        InetSocketAddress server = new InetSocketAddress(
+                "localHost", 71);
+        
+        ServerSocket socket = sock.socket();
+        socket.bind(server);
+        
+        //create selector and register it on the channel
+        Selector hat = Selector.open();
+        sock.register (hat, SelectionKey.OP_ACCEPT);
+        
+        //looking for connections
+        while(true){
+            hat.select();
+            Set keys = hat.selectedKeys();
+            box.append(keys.toString());
+            Iterator it = keys.iterator();
+            while(it.hasNext()){
+                SelectionKey lKey = (SelectionKey) it.next();
+                it.remove();
+                if(lKey.isAcceptable()){
+                    ServerSocketChannel lChannel = 
+                            (ServerSocketChannel) lKey.channel();
+                    ServerSocket lSocket = lChannel.socket();
+                    Socket connection = lSocket.accept();
+                    handleRequest(connection);
+                    box.setText("whatt???");
+                    connection.close();
+                    
+                }
+                    
+                
+            }
+        }
+        } catch (IOException ioe){
+            System.out.println("Error01 : " + ioe.getMessage());
+        }
+        
+        
+    }
+    private void handleRequest(Socket connection) throws IOException{
+        InputStreamReader isr = new InputStreamReader(
+                connection.getInputStream());
+        box.setText(isr.toString());
+        BufferedReader is = new BufferedReader(isr);
+        PrintWriter pw = new PrintWriter(new
+                BufferedOutputStream (connection.getOutputStream()), false);
+        System.out.append(connection.getOutputStream().toString());
+        
+        //output server greeting
+        
+        pw.println("Nio Finger Server: This is WhiteThunderBLA");
+        pw.flush();
+        box.setText(pw.toString());
+        String outLine = null;
+        String inLine = is.readLine();
+        
+        if(inLine.length() > 0){
+            outLine = inLine;
+            
+        }
+        readPlan(outLine, pw);
+        
+        pw.flush();
+        pw.close();
+        is.close();
+    }
+    public static void readPlan(String userN, PrintWriter pw){
+        try{
+            FileReader file = new FileReader (userN + ".plan");
+            BufferedReader buff = new BufferedReader(file);
+            boolean eof = false;
+            
+            pw.println("\nUser Name: " + userN + "\n");
+            while (!eof){
+                String line = buff.readLine();
+                if(line == null){
+                    eof = true;
+                    
+                }else {
+                    pw.println(line);
+                }
+            }
+            buff.close();
+            
+        }catch ( IOException e){
+            pw.println("User: " + userN + "Not Found.");
+        }
+    }
+    public static void main(String[] args){
+        Finger nio = new Finger();
+       
+        FingerThat peace = new FingerThat();
+        
+    }
+}
