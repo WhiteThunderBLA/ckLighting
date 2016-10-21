@@ -1,0 +1,39 @@
+ import java.net.Socket;
+ import java.net.UnknownHostException;
+   import java.io.PrintWriter;
+   import java.io.BufferedReader;
+   import java.io.InputStreamReader;
+   import java.io.IOException;
+   
+  public class Finger {
+  
+     final static int port = 5900;
+  
+     public static void main (String [] args) {
+  
+        final String hostname = args.length>0?args[0]:"24.176.246.182";
+  
+        try {
+  	 final Socket          s = new Socket (hostname, port);
+  	 final PrintWriter    pw = new PrintWriter (s.getOutputStream());
+  	 final BufferedReader in = new BufferedReader (
+  	    new InputStreamReader (s.getInputStream()));
+  
+  	 for (int i=1; i<args.length; i++) {
+  	    pw.print (args[i]+ " ");
+  	 }
+  	 pw.print ("\r\n");
+  	 pw.flush();
+  
+  	 for (;;) {
+  	    final String line = in.readLine();
+  	    if (line==null) break;
+  	    System.out.println (line);
+  	 }
+      
+  	 s.close();
+        } catch (IOException e) {
+  	 e.printStackTrace (System.err);
+        }
+     }
+  }
