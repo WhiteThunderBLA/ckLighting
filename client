@@ -1,0 +1,68 @@
+import javax.swing.*;
+import java.awt.GridLayout;
+import java.net.Socket;
+import java.io.BufferedReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Random;
+import java.util.*;
+import java.lang.Object;
+import java.io.PrintWriter;
+import java.io.PrintStream;
+import java.io.LineNumberReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+import java.net.UnknownHostException;
+
+
+public class Messanger extends JFrame{
+
+public Messanger(){
+
+super();
+JFrame again = new JFrame();
+JPanel yep = new JPanel();
+
+String yeah;
+
+JTextArea whoa = new JTextArea();
+JButton fun = new JButton("Info");
+
+
+again.setSize(500,300);
+again.setLayout(new GridLayout(2,0));
+again.setDefaultCloseOperation(EXIT_ON_CLOSE);
+yep.add(fun);
+yep.add(whoa);
+again.add(yep);
+add(again);
+again.setVisible(true);
+
+
+
+}
+
+
+public static void main(String args[])throws UnknownHostException, IOException{
+
+
+
+String wallabe = "localhost";
+Scanner sc = new Scanner(System.in);
+Socket t = new Socket(wallabe,5900);
+Scanner s = new Scanner(t.getInputStream());
+PrintStream p = new PrintStream(t.getOutputStream());
+
+String message = "now youre getting some where!";
+
+OutputStreamWriter osw = new OutputStreamWriter(t.getOutputStream());
+PrintWriter out = new PrintWriter(osw);
+osw.write(message);
+Messanger win = new Messanger();
+
+}
+
+}
